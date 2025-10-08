@@ -1,0 +1,7 @@
+C:\Users\Admin\Desktop\Sample .net proj\webapp\finalfiles\webapp.exe
+C:\Users\Admin\Desktop\Sample .net proj\webapp\finalfiles\appsettings.Development.json
+C:\Users\Admin\Desktop\Sample .net proj\webapp\finalfiles\appsettings.json
+C:\Users\Admin\Desktop\Sample .net proj\webapp\finalfiles\webapp.dll
+C:\Users\Admin\Desktop\Sample .net proj\webapp\finalfiles\webapp.deps.json
+C:\Users\Admin\Desktop\Sample .net proj\webapp\finalfiles\webapp.runtimeconfig.json
+C:\Users\Admin\Desktop\Sample .net proj\webapp\finalfiles\webapp.pdb
