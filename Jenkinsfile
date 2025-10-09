@@ -35,7 +35,7 @@ pipeline {
                     def version = "v${new Date().format('yyyyMMdd_HHmmss')}_build${env.BUILD_NUMBER}"
                     env.VERSION_DIR = "${version}"
                     env.ARCHIVE_PATH = "/opt/deployments/${VERSION_DIR}"
-                    sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'mkdir -p ${ARCHIVE_PATH}'"
+                    sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'sudo mkdir -p ${ARCHIVE_PATH}'"
                     sh "scp -r ${BUILD_DIR}/* ${ANSIBLE_USER}@${ANSIBLE_SERVER}:${ARCHIVE_PATH}/"
                     echo "Version archived at: ${ARCHIVE_PATH}"
                 }
