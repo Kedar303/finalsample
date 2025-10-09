@@ -33,10 +33,12 @@ pipeline {
                 script {
                     // Create versioned folder name like v20251007_#23
                     def version = "v${new Date().format('yyyyMMdd_HHmmss')}_build${env.BUILD_NUMBER}"
+                    def TEMP_PATH = "/tmp/deployment_temp"
                     env.VERSION_DIR = "${version}"
                     env.ARCHIVE_PATH = "/opt/deployments/${VERSION_DIR}"
                     sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'sudo mkdir -p ${ARCHIVE_PATH}'"
-                    sh "sudo scp -r ${BUILD_DIR}/* ${ANSIBLE_USER}@${ANSIBLE_SERVER}:${ARCHIVE_PATH}/"
+                    sh """scp -r \${BUILD_DIR}/* \${ANSIBLE_USER}@\${ANSIBLE_SERVER}:\${TEMP_PATH}/ """
+                    sh """ ssh \${ANSIBLE_USER}@\${ANSIBLE_SERVER} "sudo mkdir -p \${ARCHIVE_PATH} && sudo mv \${TEMP_PATH}/* \${ARCHIVE_PATH}/ && sudo rm -rf \${TEMP_PATH}" """
                     echo "Version archived at: ${ARCHIVE_PATH}"
                 }
             }
