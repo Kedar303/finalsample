@@ -30,13 +30,16 @@ pipeline {
             steps {
                 script {
                     def version = "v${new Date().format('yyyyMMdd_HHmmss')}_build${env.BUILD_NUMBER}"
-                    def archivePath = "/opt/deployments/${version}"
-                    echo "DEBUG: ARCHIVE_PATH=${archivePath}"
+                    env.ARCHIVE_PATH = "/opt/deployments/${version}"   // 🔹 make global
+                    echo "DEBUG: ARCHIVE_PATH=${env.ARCHIVE_PATH}"
 
-                    sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'mkdir -p ${archivePath}'"
-                    sh "scp -r ${BUILD_DIR}/* ${ANSIBLE_USER}@${ANSIBLE_SERVER}:${archivePath}/"
+                    // Create directory on remote server
+                    sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'mkdir -p ${env.ARCHIVE_PATH}'"
 
-                    echo "✅ Version archived at: ${archivePath}"
+                    // Copy files to the correct remote path
+                    sh "scp -r ${BUILD_DIR}/* ${ANSIBLE_USER}@${ANSIBLE_SERVER}:${env.ARCHIVE_PATH}/"
+
+                    echo "✅ Version archived at: ${env.ARCHIVE_PATH}"
                 }
             }
         }
@@ -44,19 +47,20 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Detect which branch triggered the build
                     if (env.BRANCH_NAME == 'dev') {
                         echo "Deploying to Development IIS (${DEV_IIS})"
                         sh """
                             ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} \
                             'ansible-playbook ${PLAYBOOK_PATH} \
-                            -e target_env=dev -e iis_server=${DEV_IIS} -e version_path=${archivePath}'
+                            -e target_env=dev -e iis_server=${DEV_IIS} -e version_path=${env.ARCHIVE_PATH}'
                         """
                     } else if (env.BRANCH_NAME == 'main') {
                         echo "Deploying to Production IIS (${DEV_IIS})"
                         sh """
                             ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} \
                             'ansible-playbook ${PLAYBOOK_PATH} \
-                            -e target_env=prod -e iis_server=${DEV_IIS} -e version_path=${archivePath}'
+                            -e target_env=prod -e iis_server=${DEV_IIS} -e version_path=${env.ARCHIVE_PATH}'
                         """
                     } else {
                         echo "Branch ${env.BRANCH_NAME} not configured for deployment."
@@ -69,6 +73,9 @@ pipeline {
     post {
         success {
             echo "${env.BRANCH_NAME} deployment completed successfully!"
+        }
+        failure {
+            echo "❌ Deployment failed for branch ${env.BRANCH_NAME}"
         }
     }
 }
