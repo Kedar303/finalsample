@@ -37,7 +37,7 @@ pipeline {
                     env.ARCHIVE_PATH = "/opt/deployments/${VERSION_DIR}"
                     sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'mkdir -p ${ARCHIVE_PATH}'"
                     echo "DEBUG: ARCHIVE_PATH=${env.ARCHIVE_PATH}"
-                    sh "scp -r ${BUILD_DIR}/* ${ANSIBLE_USER}@${ANSIBLE_SERVER}:\"${env.ARCHIVE_PATH}/\""
+                    sh "scp -r ${BUILD_DIR}/* ${ANSIBLE_USER}@${ANSIBLE_SERVER}:${env.ARCHIVE_PATH}/"
                     echo "Version archived at: ${ARCHIVE_PATH}"
                 }
             }
