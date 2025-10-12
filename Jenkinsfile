@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_PROJECT = "webapp.csproj"
-        BUILD_DIR = "/build_output"
-        ANSIBLE_USER = "ec2-user"
+        DOTNET_PROJECT = "webapp.csproj"  //change name to .cs.proj as per the project
+        BUILD_DIR = "/build_output" //here build files will be stored
+        ANSIBLE_USER = "ec2-user" //login user in ansible server
         ANSIBLE_SERVER = "172.31.34.192"
-        PLAYBOOK_PATH = "/deploy_iis_app.yml"
+        PLAYBOOK_PATH = "/deploy_iis_app.yml" //playbook path in ansible server
         DEV_IIS = "172.31.2.240"
     }
 
@@ -30,16 +30,16 @@ pipeline {
             steps {
                 script {
                     def version = "v${new Date().format('yyyyMMdd_HHmmss')}_build${env.BUILD_NUMBER}"
-                    env.ARCHIVE_PATH = "/opt/deployments/${version}"   // 🔹 make global
+                    env.ARCHIVE_PATH = "/opt/deployments/${version}"  
                     echo "DEBUG: ARCHIVE_PATH=${env.ARCHIVE_PATH}"
 
                     // Create directory on remote server
-                    sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'mkdir -p ${env.ARCHIVE_PATH}'"
+                    sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'mkdir -p ${env.ARCHIVE_PATH}'" //create directory manually and assign permissions manually to the ansible user to that folder
 
                     // Copy files to the correct remote path
                     sh "scp -r ${BUILD_DIR}/* ${ANSIBLE_USER}@${ANSIBLE_SERVER}:${env.ARCHIVE_PATH}/"
 
-                    echo "✅ Version archived at: ${env.ARCHIVE_PATH}"
+                    echo "Version archived at: ${env.ARCHIVE_PATH}"
                 }
             }
         }
