@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_PROJECT = "webapp.csproj"
+        DOTNET_PROJECT = "MyApp.csproj"
         BUILD_DIR = "/build_output"
-        ANSIBLE_USER = "ec2-user"
+        ANSIBLE_USER = "ansible"
         ANSIBLE_SERVER = "172.31.34.192"
         PLAYBOOK_PATH = "/deploy_iis_app.yml"
 
@@ -31,18 +31,20 @@ pipeline {
         stage('Versioning') {
             steps {
                 script {
-                    // Create versioned folder name like v20251007_#23
                     def version = "v${new Date().format('yyyyMMdd_HHmmss')}_build${env.BUILD_NUMBER}"
-                    def TEMP_PATH = "/tmp/deployment_temp"
-                    env.VERSION_DIR = "${version}"
-                    env.ARCHIVE_PATH = "/opt/deployments/${VERSION_DIR}"
-                    sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'sudo mkdir -p ${ARCHIVE_PATH}'"
-                    sh """scp -r \${BUILD_DIR}/* \${ANSIBLE_USER}@\${ANSIBLE_SERVER}:\${TEMP_PATH}/ """
-                    sh """ ssh \${ANSIBLE_USER}@\${ANSIBLE_SERVER} "sudo mkdir -p \${ARCHIVE_PATH} && sudo mv \${TEMP_PATH}/* \${ARCHIVE_PATH}/ && sudo rm -rf \${TEMP_PATH}" """
-                    echo "Version archived at: ${ARCHIVE_PATH}"
-                }
-            }
+                    def archivePath = "/opt/deployments/${version}"   // <— local Groovy variable
+                    echo "DEBUG: ARCHIVE_PATH=${archivePath}"
+
+            // Create directory on remote server
+                    sh "ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} 'mkdir -p ${archivePath}'"
+
+            // Copy files to the correct remote path
+                    sh "scp -r ${BUILD_DIR}/* ${ANSIBLE_USER}@${ANSIBLE_SERVER}:${archivePath}/"
+
+                    echo "✅ Version archived at: ${archivePath}"
         }
+    }
+}
 
  
         stage('Deploy') {
