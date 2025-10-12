@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     def version = "v${new Date().format('yyyyMMdd_HHmmss')}_build${env.BUILD_NUMBER}"
-                    def archivePath = "/opt/deployments/${version}"   // <— local Groovy variable
+                    env.ARCHIVE_PATH = "/opt/deployments/${version}"   // <— local Groovy variable
                     echo "DEBUG: ARCHIVE_PATH=${archivePath}"
 
             // Create directory on remote server
