@@ -7,7 +7,7 @@ pipeline {
         ANSIBLE_USER = "ec2-user"
         ANSIBLE_SERVER = "172.31.34.192"
         PLAYBOOK_PATH = "/deploy_iis_app.yml"
-        DEV_IIS = "172.31.36.48"
+        DEV_IIS = "172.31.2.240"
     }
 
     stages {
