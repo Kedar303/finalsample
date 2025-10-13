@@ -8,6 +8,7 @@ pipeline {
         ANSIBLE_SERVER = "172.31.34.192"
         PLAYBOOK_PATH = "/deploy_iis_app.yml" //playbook path in ansible server
         PROD_IIS = "172.31.15.224"
+        DEV_IIS = "172.31.2.240"
     }
 
     stages {
