@@ -53,14 +53,14 @@ pipeline {
                         echo "Deploying to Development IIS (${DEV_IIS})"
                         sh """
                             ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} \
-                            'ansible-playbook ${PLAYBOOK_PATH} -i /hosts \
+                            'ansible-playbook ${PLAYBOOK_PATH} -i /hosts -l windows_dev \
                             -e target_env=dev -e iis_server=${DEV_IIS} -e version_path=${env.ARCHIVE_PATH}'
                         """
                     } else if (env.BRANCH_NAME == 'main') {
                         echo "Deploying to Production IIS (${PROD_IIS})"
                         sh """
                             ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} \
-                            'ansible-playbook ${PLAYBOOK_PATH} \
+                            'ansible-playbook ${PLAYBOOK_PATH} -i /hosts -l windows_prod \
                             -e target_env=prod -e iis_server=${PROD_IIS} -e version_path=${env.ARCHIVE_PATH}'
                         """
                     } else {
