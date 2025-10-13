@@ -7,7 +7,7 @@ pipeline {
         ANSIBLE_USER = "ec2-user" //login user in ansible server
         ANSIBLE_SERVER = "172.31.34.192"
         PLAYBOOK_PATH = "/deploy_iis_app.yml" //playbook path in ansible server
-        DEV_IIS = "172.31.2.240"
+        PROD_IIS = "172.31.15.224"
     }
 
     stages {
@@ -56,11 +56,11 @@ pipeline {
                             -e target_env=dev -e iis_server=${DEV_IIS} -e version_path=${env.ARCHIVE_PATH}'
                         """
                     } else if (env.BRANCH_NAME == 'main') {
-                        echo "Deploying to Production IIS (${DEV_IIS})"
+                        echo "Deploying to Production IIS (${PROD_IIS})"
                         sh """
                             ssh ${ANSIBLE_USER}@${ANSIBLE_SERVER} \
                             'ansible-playbook ${PLAYBOOK_PATH} \
-                            -e target_env=prod -e iis_server=${DEV_IIS} -e version_path=${env.ARCHIVE_PATH}'
+                            -e target_env=prod -e iis_server=${PROD_IIS} -e version_path=${env.ARCHIVE_PATH}'
                         """
                     } else {
                         echo "Branch ${env.BRANCH_NAME} not configured for deployment."
