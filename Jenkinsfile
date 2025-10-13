@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_PROJECT = "MyApp.csproj"
+        DOTNET_PROJECT = "webapp.csproj"
         BUILD_DIR = "/build_output"
-        ANSIBLE_USER = "ansible"
+        ANSIBLE_USER = "ec2-user"
         ANSIBLE_SERVER = "172.31.34.192"
         PLAYBOOK_PATH = "/deploy_iis_app.yml"
 
