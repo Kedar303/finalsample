@@ -18,6 +18,6 @@ public class IndexModel : PageModel
     public void OnGet()
     {
         // Setting the message to "Hello Safran"
-        Message = "Hello Safran Digit from Kedar Alande";
+        Message = "Hello Safran Digit from Kedar Alande testing";
     }
 }
