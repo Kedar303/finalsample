@@ -19,8 +19,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
+//app.MapStaticAssets();
 app.MapRazorPages()
-   .WithStaticAssets();
+//   .WithStaticAssets();
 
 app.Run();
