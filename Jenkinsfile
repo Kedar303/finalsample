@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOTNET_PROJECT = "webapp.csproj"  //change name to .cs.proj as per the project
         BUILD_DIR = "/build_output" //here build files will be stored
-        ANSIBLE_USER = "ec2-user" //login user in ansible server
+        ANSIBLE_USER = "ec2-user" //login user in ansible server, password less auth
         ANSIBLE_SERVER = "172.31.34.192"
         PLAYBOOK_PATH = "/deploy_iis_app.yml" //playbook path in ansible server
         PROD_IIS = "172.31.15.224"
