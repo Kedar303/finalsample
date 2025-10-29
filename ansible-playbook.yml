@@ -1,0 +1,67 @@
+---
+- name: Deploy .NET app on IIS demo
+  hosts: "{{ iis_server }}"
+  gather_facts: no
+  vars:
+    app_name: "MyApp"
+    app_pool: "MyAppPool"
+    deploy_path: "C:\\inetpub\\myapp-{{ target_env }}"
+    backup_path: "C:\\backup\\myapp-{{ target_env }}"
+
+  tasks:
+    # Stop the IIS site to release locked files
+    - name: Stop IIS site
+      win_iis_website:
+        name: "{{ app_name }}-{{ target_env }}"
+        state: stopped
+      ignore_errors: yes  # In case site does not exist yet
+
+    # Stop the App Pool
+    - name: Stop App Pool
+      win_iis_webapppool:
+        name: "{{ app_pool }}"
+        state: stopped
+      ignore_errors: yes  # In case pool does not exist yet
+
+    # Copy new version to IIS folder
+    - name: Copy new version to IIS folder
+      win_copy:
+        src: "{{ version_path }}/"
+        dest: "{{ deploy_path }}/"
+        force: yes
+
+    # Ensure the App Pool exists and start it
+    - name: Ensure app pool exists and start it
+      win_iis_webapppool:
+        name: "{{ app_pool }}"
+        state: started
+        managed_runtime_version: ""
+
+    # Check if the IIS site already exists
+    - name: Check if IIS site exists
+      win_shell: |
+        Import-Module WebAdministration
+        if (Test-Path "IIS:\\Sites\\{{ app_name }}-{{ target_env }}") { Write-Output "exists" } else { Write-Output "absent" }
+      register: site_check
+
+    # Update existing IIS site if it exists
+    - name: Update existing IIS site
+      win_iis_website:
+        name: "{{ app_name }}-{{ target_env }}"
+        state: started
+        port: "{{ '8080' if target_env == 'dev' else '8081' }}"
+        physical_path: "{{ deploy_path }}"
+        application_pool: "{{ app_pool }}"
+        ip: "*"
+      when: site_check.stdout.find('exists') != -1
+
+    # Create IIS site if it does NOT exist
+    - name: Create IIS site if not exists
+      win_iis_website:
+        name: "{{ app_name }}-{{ target_env }}"
+        state: started
+        port: "{{ '8080' if target_env == 'dev' else '8081' }}"
+        physical_path: "{{ deploy_path }}"
+        application_pool: "{{ app_pool }}"
+        ip: "*"
+      when: site_check.stdout.find('absent') != -1
